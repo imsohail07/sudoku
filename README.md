@@ -1,18 +1,53 @@
-# React + Vite
+# 🧩 Sudoku – Progressive Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive **Sudoku game** built with **React + Vite**, featuring multiple difficulty levels, real-time validation, offline support, and mobile installability via PWA.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo
+🔗 **https://imsohail07.github.io/sudoku/**
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## ✨ Features
+- 🎮 Easy / Medium / Hard difficulty levels
+- ✍️ Notes (pencil mode) support
+- ❌ Mistake tracking with Game Over screen
+- 🏆 Best time tracking (localStorage)
+- 🎉 Win animations with confetti
+- 🌗 Light / Dark theme toggle
+- 📱 Installable as a mobile app (PWA)
+- ⚡ Fast performance using Vite
+- 🔌 Offline gameplay support
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
+- **Frontend:** React (Vite)
+- **Styling:** CSS (Custom, responsive)
+- **State Management:** React Hooks
+- **PWA:** vite-plugin-pwa
+- **Deployment:** GitHub Pages
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 📦 Installation & Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/imsohail07/sudoku.git
+
+# Navigate into the project
+cd sudoku
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+
+👤 Author
+
+Mohammed Sohail Shirazi
+GitHub: https://github.com/imsohail07

@@ -9,14 +9,14 @@ import { isValid } from "./utils/validator";
 import confetti from "canvas-confetti";
 import "./index.css";
 
-/* ================= SOUNDS (SAFE INIT) ================= */
-const clickSound = new Audio();
-clickSound.src = "/sounds/click.mp3";
+/* ================= SOUNDS (FIXED & SAFE) ================= */
+const base = import.meta.env.BASE_URL;
+
+const clickSound = new Audio(`${base}sounds/click.mp3`);
 clickSound.preload = "auto";
 clickSound.volume = 0.4;
 
-const winSound = new Audio();
-winSound.src = "/sounds/win.mp3";
+const winSound = new Audio(`${base}sounds/win.mp3`);
 winSound.preload = "auto";
 winSound.volume = 0.6;
 
@@ -81,27 +81,18 @@ export default function App() {
     if (!selected) return;
     const { r, c } = selected;
 
-    // Block fixed cells
     if (fixed[r][c] !== null) return;
 
-    // ❌ CLEAR CELL (NO SOUND, NO VALIDATION)
     if (num === null) {
       const newBoard = board.map(row => [...row]);
       newBoard[r][c] = null;
-
-      const newNotes = { ...notes };
-      delete newNotes[`${r}-${c}`];
-
       setBoard(newBoard);
-      setNotes(newNotes);
       return;
     }
 
-    // Safe click sound
     clickSound.currentTime = 0;
     clickSound.play().catch(() => {});
 
-    // Pencil notes
     if (noteMode) {
       const key = `${r}-${c}`;
       const cellNotes = notes[key] || [];
@@ -112,7 +103,6 @@ export default function App() {
       return;
     }
 
-    // Validation
     if (!isValid(board, r, c, num)) {
       setMistakes(m => m + 1);
       setErrorCell({ r, c });
@@ -122,14 +112,10 @@ export default function App() {
 
     const newBoard = board.map(row => [...row]);
     newBoard[r][c] = num;
-
-    const newNotes = { ...notes };
-    delete newNotes[`${r}-${c}`];
-
     setBoard(newBoard);
-    setNotes(newNotes);
-    checkNumberCompletion(newBoard);
+
     checkWin(newBoard);
+    checkNumberCompletion(newBoard);
   };
 
   /* ================= HINT ================= */
@@ -155,10 +141,7 @@ export default function App() {
       winSound.play().catch(() => {});
       confetti({ particleCount: 200, spread: 100 });
 
-      const updatedWins = {
-        ...wins,
-        [difficulty]: wins[difficulty] + 1
-      };
+      const updatedWins = { ...wins, [difficulty]: wins[difficulty] + 1 };
       setWins(updatedWins);
       localStorage.setItem("wins", JSON.stringify(updatedWins));
 
@@ -193,12 +176,15 @@ export default function App() {
     }
   };
 
-  /* ================= GAME OVER ================= */
-  if (mistakes >= 3) {
+  /* ================= GAME OVER PAGE ================= */
+  if (mistakes >= 3 && screen === "game") {
     return (
-      <div className={`app ${theme}`}>
+      <div className="game-over-page">
         <h1>💀 Game Over</h1>
-        <button onClick={() => setScreen("start")}>Restart</button>
+        <p>You made too many mistakes.</p>
+        <button onClick={() => setScreen("start")}>
+          🔁 Back to Start Page
+        </button>
       </div>
     );
   }
@@ -206,7 +192,6 @@ export default function App() {
   /* ================= SCREENS ================= */
   return (
     <div className={`screen-wrapper ${screen}`}>
-
       {screen === "start" && (
         <StartPage
           onStart={() => startGame(difficulty)}
@@ -220,72 +205,83 @@ export default function App() {
       )}
 
       {screen === "game" && (
-        <div className={`app ${theme}`}>
+  <div className={`app ${theme}`}>
+    <div className="game-layout">
 
-          <header>
-            <h1>🧩 Sudoku</h1>
-            <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-              {theme === "dark" ? "☀ Light" : "🌙 Dark"}
-            </button>
-          </header>
+      {/* ===== HEADER ===== */}
+      <header>
+        <h1>🧩 Sudoku</h1>
+        <button onClick={() => setTheme(t => t === "dark" ? "light" : "dark")}>
+          {theme === "dark" ? "☀ Light" : "🌙 Dark"}
+        </button>
+      </header>
 
-          <div className="top">
-            <span>⏱ {formatTime(time)}</span>
-            <span>❌ Mistakes: {mistakes}/3</span>
-            <span>
-              🏆 Best:{" "}
-              {bestTimes[difficulty]
-                ? formatTime(bestTimes[difficulty])
-                : "--"}
-            </span>
+      {/* ===== STATUS BAR ===== */}
+      <div className="top">
+        <span>⏱ {formatTime(time)}</span>
+        <span>❌ Mistakes: {mistakes}/3</span>
+        <span>
+          🏆 Best:{" "}
+          {bestTimes[difficulty]
+            ? formatTime(bestTimes[difficulty])
+            : "--"}
+        </span>
+      </div>
+
+      {/* ===== CONTROLS ===== */}
+      <div className="controls">
+        <select
+          value={difficulty}
+          onChange={e => startGame(e.target.value)}
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <button onClick={() => setNoteMode(n => !n)}>
+          ✏️ Notes: {noteMode ? "ON" : "OFF"}
+        </button>
+
+        <button onClick={giveHint}>💡 Hint</button>
+
+        <button
+          onClick={() => startGame(difficulty)}
+          disabled={showWinModal}
+        >
+          🔄 Reset
+        </button>
+      </div>
+
+      {/* ===== BOARD ===== */}
+      <Board
+        board={board}
+        fixed={fixed}
+        selected={selected}
+        setSelected={setSelected}
+        notes={notes}
+        completedNumber={completedNumber}
+        errorCell={errorCell}
+      />
+
+      {/* ===== NUMBER PAD ===== */}
+      <NumberPad onSelect={updateCell} />
+
+      {/* ===== WIN MODAL ===== */}
+      {showWinModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>🎉 You Won!</h2>
+            <p>Time: {formatTime(time)}</p>
+            <button onClick={() => startGame(difficulty)}>New Game</button>
+            <button onClick={() => setShowWinModal(false)}>Close</button>
           </div>
-
-          <div className="controls">
-            <select value={difficulty} onChange={e => startGame(e.target.value)}>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-
-            <button onClick={() => setNoteMode(n => !n)}>
-              ✏️ Notes: {noteMode ? "ON" : "OFF"}
-            </button>
-
-            <button onClick={giveHint}>💡 Hint</button>
-
-            <button
-              onClick={() => startGame(difficulty)}
-              disabled={showWinModal}
-            >
-              🔄 Reset
-            </button>
-          </div>
-
-          <Board
-            board={board}
-            fixed={fixed}
-            selected={selected}
-            setSelected={setSelected}
-            notes={notes}
-            completedNumber={completedNumber}
-            errorCell={errorCell}
-          />
-
-          <NumberPad onSelect={updateCell} />
-
-          {showWinModal && (
-            <div className="modal-overlay">
-              <div className="modal">
-                <h2>🎉 You Won!</h2>
-                <p>Time: {formatTime(time)}</p>
-                <button onClick={() => startGame(difficulty)}>New Game</button>
-                <button onClick={() => setShowWinModal(false)}>Close</button>
-              </div>
-            </div>
-          )}
-
         </div>
       )}
+
+    </div>
+  </div>
+)}
 
     </div>
   );
