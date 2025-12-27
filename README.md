@@ -30,6 +30,10 @@ A modern, responsive **Sudoku game** built with **React + Vite**, featuring mult
 - **Deployment:** GitHub Pages
 
 ---
+👤 Author
+
+Mohammed Sohail Shirazi
+GitHub: https://github.com/imsohail07
 
 ## 📦 Installation & Setup
 
@@ -46,8 +50,4 @@ npm install
 # Start development server
 npm run dev
 
-
-👤 Author
-
-Mohammed Sohail Shirazi
-GitHub: https://github.com/imsohail07
+---
