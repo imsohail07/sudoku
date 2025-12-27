@@ -9,13 +9,12 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icon-192.png", "icon-512.png"],
       manifest: {
-        name: "Sudoku Game",
+        name: "Sudoku",
         short_name: "Sudoku",
-        description: "A modern Sudoku game built with React",
-        theme_color: "#312e81",
-        background_color: "#0f172a",
+        theme_color: "#f8fafc",
+        background_color: "#f8fafc",
         display: "standalone",
-        start_url: ".",
+        start_url: "/",
         icons: [
           {
             src: "/icon-192.png",
